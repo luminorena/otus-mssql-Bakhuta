@@ -117,6 +117,7 @@ and IsOrderFinalized = 1
 Сделать без подзапросов.
 */
 
+
 select top 10 
 	   sp.OrderID
 	   ,sp.OrderDate
@@ -124,9 +125,8 @@ select top 10
 	   ,ap.FullName
 	   from sales.Orders sp
 join [Application].People ap
-on sp.ContactPersonID = ap.PersonID
+on sp.SalespersonPersonID = ap.PersonID
 join sales.Customers sc on sc.CustomerID = sp.CustomerID
-where ap.IsSalesperson = 0
 order by sp.OrderDate desc
 
 
