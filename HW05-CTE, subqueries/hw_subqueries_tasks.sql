@@ -37,6 +37,17 @@ where not exists (select * from Sales.Invoices i
 where i.ContactPersonID = p.PersonID and IsSalesperson = 1
 and i.InvoiceDate<>'2013-06-04')
 
+--исправленный
+/*
+условие было неправильное, ошибка локализуется, если вывести IsSalesperson первым столбцом, в первом случае будут нули, а во 
+втором единицы, то есть как раз продажники.
+*/
+
+select p.* from [Application].people p
+where  IsSalesperson = 1 and not exists (select * from Sales.Invoices i
+where i.ContactPersonID = p.PersonID 
+and i.InvoiceDate<>'2013-06-04')
+
 
 /*
 2. Выберите товары с минимальной ценой (подзапросом). Сделайте два варианта подзапроса. 
@@ -61,28 +72,18 @@ where unitprice = Any (select min(UnitPrice) from Warehouse.StockItems)
 Представьте несколько способов (в том числе с CTE). 
 */
 
-/*
-если нужны разные клиенты, то можно через оконную функцию выводить, 
-если одинаковые могут повторяться в результирующем наборе, то делается
-через одну CTE, order by TransactionAmount desc, top 5)
-*/
+--CTE
 
 ;with preselectData as
 (
 select CustomerName, TransactionAmount from sales.CustomerTransactions ct
 join sales.Customers c on ct.CustomerID = c.CustomerID
-),
-preselect as 
-(
-select CustomerName, TransactionAmount, 
-DENSE_RANK() over (order by TransactionAmount desc) as denserank
-from preselectData
+)
+select distinct top 5 CustomerName, TransactionAmount from preselectData
 group by CustomerName, TransactionAmount
-) 
-select CustomerName, TransactionAmount from preselect
-where denserank in(1,2,3,5,11)
+order by TransactionAmount desc
 
--- через подзапрос не получится добиться того же условия, что выше с оконной функцией
+-- подзапрос
 select distinct top 5 CustomerName, TransactionAmount
 from sales.CustomerTransactions ct
 join sales.Customers c on ct.CustomerID = c.CustomerID
@@ -96,18 +97,19 @@ order by TransactionAmount desc
 который осуществлял упаковку заказов (PackedByPersonID).
 */
 
---а тут не могу понять, какие таблицы надо использовать, [Application].Cities
---не могу никак связать с товарами.
+select  CityId, CityName, sc.CustomerID, ws.StockItemName, ws.UnitPrice
+, PackedByPersonID, ap.FullName
+from [Application].Cities ac
+join Sales.Customers sc on ac.CityID = sc.DeliveryCityID
+join sales.Orders so on sc.CustomerId = so.CustomerID
+join sales.OrderLines sol on sol.OrderID = so.OrderID
+join Warehouse.StockItems ws on ws.StockItemID = sol.StockItemID
+join sales.Invoices si on si.OrderID = so.OrderID
+join [Application].People ap on ap.PersonID = si.PackedByPersonID
+where sol.UnitPrice in (select top 3 UnitPrice from Warehouse.StockItems ws order by UnitPrice desc)
+order by ws.UnitPrice desc
 
-select * from sales.Invoices
-select * from Warehouse.StockItems
-select * from sales.Orders
-select * from [Application].Cities
-select * from [Application].StateProvinces
-select * from [Application].Countries
 
-select * from INFORMATION_SCHEMA.columns
-where column_name = 'CityId'
 
 -- ---------------------------------------------------------------------------
 -- Опциональное задание
