@@ -38,29 +38,40 @@ InvoiceMonth | Peeples Valley, AZ | Medicine Lodge, KS | Gasport, NY | Sylvanite
 01.02.2013   |      7             |        3           |      4      |      2        |     1
 -------------+--------------------+--------------------+-------------+--------------+------------
 */
--- не пойму, почему выводятся нули и единицы вместо нормальных цифр
-;with PivotData as
-(select InvoiceDate
-	,2 as 'Peeples Valley, AZ'
-	,3 as 'Medicine Lodge, KS'
-	,4 as 'Gasport, NY'
-	,5 as 'Sylvanite, MT'
-	,6 as 'Jessie, ND'
-	,InvoiceID
-	,c.CustomerId
-from sales.Invoices i
-join  sales.Customers c on i.CustomerId = c.CustomerID)
-select convert(nvarchar(10), InvoiceDate,104) as InvoiceDate
-	,[2] as 'Peeples Valley, AZ'
-	,[3] as 'Medicine Lodge, KS'
-	,[4] as 'Gasport, NY'
-	,[5] as 'Sylvanite, MT'
-	,[6] as 'Jessie, ND'
-from PivotData
-pivot (count(InvoiceId) for CustomerId in
-([2],[3],[4],[5],[6]))
+
+
+;with cte as (
+select CustomerID,
+SUBSTRING(CustomerName, 
+CHARINDEX('(', CustomerName) + 1, len(CustomerName)- CHARINDEX('(', CustomerName) -1) as ShortName
+from Sales.Customers
+where CustomerID between 2 and 6
+),
+preselect as(
+select convert(nvarchar(10), InvoiceDate,104) as InvoiceDate,
+cte.ShortName, s.InvoiceID--, month(InvoiceDate) as monthInvoiceDate
+from cte
+join sales.Invoices s on cte.CustomerID = s.CustomerID
+)
+select * from preselect
+pivot (count(InvoiceId) for ShortName in ([Peeples Valley, AZ],[Medicine Lodge, KS],
+[Gasport, NY],[Sylvanite, MT], [Jessie, ND]))
 as PivotTable
-order by month(InvoiceDate)
+order by InvoiceDate
+
+
+--дебаг
+;with preselect as (
+select count(InvoiceId) as countInvoiceId, 
+convert(nvarchar(10), InvoiceDate,104) as InvoiceDate 
+from sales.Invoices i
+join sales.Customers c on i.CustomerID = c.CustomerID
+where CustomerName = 'Tailspin Toys (Peeples Valley, AZ)'
+group by InvoiceID, InvoiceDate
+) 
+select countInvoiceId from preselect
+where InvoiceDate = '01.01.2013'
+
 
 
 /*
