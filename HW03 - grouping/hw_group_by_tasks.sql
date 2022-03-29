@@ -98,13 +98,14 @@ having sum(sol.PickedQuantity * sol.UnitPrice) < 50
 */
 
 /*
-Вы описали алгоритм реализации следующим образом:
+Ваш комментарий:
 По опциональному заданию - можно просто "захардкодить" таблицу с месяцами, годами в коде и
 потом ее соединить с данными через left join - нули там "автоматом" появятся, case не нужен.
-Сделала таблицы, сделала left join, но почему-то не работает. Не пойму, в чём может быть проблема.
 */
 
 
+drop table if exists #monthTable
+drop table if exists #yearTable
 Declare @maxMonth INT = 12;
 WITH GenId (Id) AS 
 (	
@@ -118,46 +119,50 @@ Select * into #monthTable
 from GenId
 OPTION (MAXRECURSION 12);
 
-Declare @maxYear INT = 2016;
+Declare @maxYear INT = (select max(year(InvoiceDate)) from Sales.Invoices),
+	@minYear INT = (select min(year(InvoiceDate)) from Sales.Invoices);
 WITH GenId (Id) AS 
 (	
-	SELECT 2013 
+	SELECT @minYear 
 	UNION ALL
 	SELECT GenId.Id + 1
 	FROM GenId 
 	WHERE GenId.Id < @maxYear
 )
 Select * into #yearTable
-from GenId
-OPTION (MAXRECURSION 2016);
+from GenId;
+
 
 select * from #monthTable
 select * from #yearTable
 
 --2
 
-select	year(InvoiceDate) as [year]
-	   ,month(InvoiceDate) as [month]
-	   ,sum(UnitPrice * sol.Quantity) as sumPrice 
-	   from Sales.Invoices si
-join sales.OrderLines sol on si.OrderID = sol.OrderID
-left join #monthTable m on m.Id = month(InvoiceDate)
-left join #yearTable y on y.Id = year(InvoiceDate)
-group by month(InvoiceDate), year(InvoiceDate)
-having sum(UnitPrice * sol.Quantity) > 10000
+select	y.Id as [year]
+	   ,m.Id as [month]
+	   ,isNull(sum(UnitPrice * sol.Quantity), 0) as sumPrice 
+from #yearTable y
+cross join #monthTable m
+left join Sales.Invoices si on m.Id = month(InvoiceDate) and y.Id = year(InvoiceDate)
+left join sales.OrderLines sol on si.OrderID = sol.OrderID
+group by y.Id, m.Id
+order by  [year], [month]
+
 
 
 --3
-select year(so.OrderDate) as [year], month(so.OrderDate) as [month], sol.[Description]
-, sum(sol.PickedQuantity * sol.UnitPrice) as [sum], si.InvoiceDate
-,sol.PickedQuantity
-from sales.Invoices si
-join sales.Orders so on si.OrderID = so.OrderID
-join sales.OrderLines sol on sol.OrderID = si.OrderID
-left join #monthTable m on m.id = month(so.OrderDate)
-left join #yearTable y on y.Id = year(so.OrderDate)
-group by year(so.OrderDate), month(so.OrderDate), 
-sol.[Description], sol.PickedQuantity, si.InvoiceDate
-having sum(sol.PickedQuantity * sol.UnitPrice) < 50
+select  y.Id as [year]
+	    ,m.Id as [month]
+		,[Description]
+	    ,isNull(sum(UnitPrice * sol.Quantity), 0) as sumPrice 
+	    ,InvoiceDate
+        ,isNull (sol.PickedQuantity, 0) as PickedQuantity
+from #yearTable y
+cross join #monthTable m
+left join sales.Invoices si on m.Id = month(InvoiceDate) and y.Id = year(InvoiceDate)
+left join sales.Orders so on si.OrderID = so.OrderID
+left join sales.OrderLines sol on sol.OrderID = si.OrderID
+group by y.Id, m.Id, sol.[Description], si.InvoiceDate,sol.PickedQuantity
+order by  [year], [month]
 
 
