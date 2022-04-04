@@ -48,7 +48,7 @@ from Sales.Customers
 where CustomerID between 2 and 6
 ),
 preselect as(
-select convert(nvarchar(10), InvoiceDate,104) as InvoiceDate,
+select DATEADD(month,DATEDIFF(MONTH,0, InvoiceDate),0) as InvoiceDate,
 cte.ShortName, s.InvoiceID--, month(InvoiceDate) as monthInvoiceDate
 from cte
 join sales.Invoices s on cte.CustomerID = s.CustomerID
@@ -60,18 +60,22 @@ as PivotTable
 order by InvoiceDate
 
 
---дебаг
-;with preselect as (
-select count(InvoiceId) as countInvoiceId, 
-convert(nvarchar(10), InvoiceDate,104) as InvoiceDate 
-from sales.Invoices i
-join sales.Customers c on i.CustomerID = c.CustomerID
-where CustomerName = 'Tailspin Toys (Peeples Valley, AZ)'
-group by InvoiceID, InvoiceDate
-) 
-select countInvoiceId from preselect
-where InvoiceDate = '01.01.2013'
-
+--с одной cte
+;with cte as (
+select 
+DATEADD(month,DATEDIFF(MONTH,0, i.InvoiceDate),0) as InvoiceDate,
+i.InvoiceID,
+SUBSTRING(CustomerName, 
+CHARINDEX('(', CustomerName) + 1, len(CustomerName)- CHARINDEX('(', CustomerName) -1) as ShortName
+from Sales.Customers c
+join sales.Invoices i on i.CustomerID = c.CustomerID
+where c.CustomerID between 2 and 6
+)
+select * from cte
+pivot (count(InvoiceId) for ShortName in ([Peeples Valley, AZ],[Medicine Lodge, KS],
+[Gasport, NY],[Sylvanite, MT], [Jessie, ND]))
+as PivotTable
+order by InvoiceDate
 
 
 /*
