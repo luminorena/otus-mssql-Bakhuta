@@ -40,33 +40,26 @@ InvoiceMonth | Aakriti Byrraju    | Abel Spirlea       | Abel Tatarescu | ... (Ð
 01.02.2013   |      7             |        3           |      4         | ...
 -------------+--------------------+--------------------+----------------+----------------------
 */
---etalon pivot
 
-use WideWorldImporters
-;with cte as (
+go
+DECLARE @dml AS NVARCHAR(MAX)
+DECLARE @CustomerName nvarchar(MAX)
+SELECT @CustomerName = ISNULL(@CustomerName + ',', '') + QUOTENAME([CustomerName])
+FROM [Sales].[Customers]
+ORDER BY [CustomerName]
+set @dml = N'select DATEADD(month,DATEDIFF(MONTH,0, InvoiceDate),0) as InvoiceDate, 
+' +@CustomerName + ' FROM
+(
 select 
 DATEADD(month,DATEDIFF(MONTH,0, i.InvoiceDate),0) as InvoiceDate,
 i.InvoiceID,
-SUBSTRING(CustomerName, 
-CHARINDEX('(', CustomerName) + 1, len(CustomerName)- CHARINDEX('(', CustomerName) -1) as ShortName
+CustomerName
 from Sales.Customers c
 join sales.Invoices i on i.CustomerID = c.CustomerID
-)
-select * from cte
-pivot (count(InvoiceId) for ShortName in ([Peeples Valley, AZ],[Medicine Lodge, KS],
-[Gasport, NY],[Sylvanite, MT], [Jessie, ND]))
-as PivotTable
-order by InvoiceDate
+--order by InvoiceDate
+) as a
+PIVOT (count(InvoiceId) FOR CustomerName in (' + @CustomerName + ')) as PivotTable
+order by InvoiceDate'
+EXEC sp_executesql @dml
 
 
-go
-declare @InvoiceId as INT
-declare @ColumnName as NVARCHAR(MAX)
-declare @CustomerName as NVARCHAR(MAX)
-declare @InvoiceDate as date
-select @ColumnName = 
-DATEADD(month,DATEDIFF(MONTH,0, @InvoiceDate = i.InvoiceDate),0), @InvoiceId = i.InvoiceID,
-SUBSTRING(@CustomerName = CustomerName, CHARINDEX('(', @CustomerName = CustomerName) + 1, 
-len(@CustomerName = CustomerName)- CHARINDEX('(',@CustomerName = CustomerName) -1) as ShortName
-from Sales.Customers c
-join sales.Invoices i on i.CustomerID = c.CustomerID
