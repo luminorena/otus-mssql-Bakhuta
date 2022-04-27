@@ -79,39 +79,26 @@ EXEC sp_xml_removedocument @docHandle
 (сопоставлять записи по полю StockItemName). 
 */
 select * from #StockItemsTemp 
+
 merge Warehouse.StockItems as target
-using (values (4, N'"The Gu" red shirt XML tag t-shirt (Black) 3XXL',7, 6, 12, 0.400, 7, 0, 20.000, 18.00, 1),
-(5, N'Developer joke mug (Yellow)', 7, 7, 10, 0.600, 12, 0, 20.000, 1.50, 1),
-(4, N'Dinosaur battery-powered slippers (Green) L', 7,7,1, 0.350, 12, 0, 20.000, 16.00, 1),
-(4, N'Dinosaur battery-powered slippers (Green) M', 7, 7, 1, 0.350, 12, 0, 20.000, 48.00, 1),
-(4, N'Dinosaur battery-powered slippers (Green) S', 7, 7, 1, 0.350, 12, 0, 20.000, 32.00, 1),
-(4, N'Furry gorilla with big eyes slippers (Black) XL', 7, 7, 1, 0.400, 12, 0, 20.000, 32.00, 1),
-(7, N'Large  replacement blades 18mm', 7, 7, 10, 0.800, 21, 0, 20.000, 2.45, 1),
-(7, N'Large sized bubblewrap roll 50m', 7, 7, 10, 10.000, 14, 0, 20.000, 36.00, 1),
-(7, N'Medium sized bubblewrap roll 20m', 7, 7, 10, 6.000, 14, 0, 20.000, 20.00, 1),
-(7, N'Shipping carton (Brown) 356x229x229mm', 7,7, 25, 0.400, 14, 0, 20.000, 1.14, 1),
-(7, N'Shipping carton (Brown) 356x356x279mm', 7, 7, 25, 0.300, 14, 0, 20.000, 3.06, 1),
-(7, N'Shipping carton (Brown) 413x285x187mm', 7, 7, 25, 0.350, 14, 0, 20.000, 0.34, 1),
-(7, N'Shipping carton (Brown) 457x279x279mm', 7, 7, 25, 0.400, 14, 0, 20.000, 1.92, 1),
-(12, N'USB food flash drive - sushi roll', 7, 7, 1, 0.050, 14, 0, 20.000, 32.00, 1),
-(12, N'USB missile launcher (Green)', 7, 7, 1, 0.300, 14, 0, 20.000, 25.00, 1)
-)
-as source (SupplierId, StockItemName, UnitPackageID, OuterPackageID, QuantityPerOuter, TypicalWeightPerUnit,
-LeadTimeDays, IsChillerStock, TaxRate, UnitPrice, LastEditedBy)
+using (select SupplierId, StockItemName, UnitPackageID, OuterPackageID, QuantityPerOuter,
+TypicalWeightPerUnit,LeadTimeDays, IsChillerStock, TaxRate, UnitPrice
+from #StockItemsTemp)
+as source (SupplierId, StockItemName, UnitPackageID, OuterPackageID, QuantityPerOuter,
+TypicalWeightPerUnit,LeadTimeDays, IsChillerStock, TaxRate, UnitPrice)
 on (target.StockItemName = source.StockItemName)
 when matched 
 then update
 set SupplierId = source.SupplierId, StockItemName = source.StockItemName, UnitPackageID = source.UnitPackageID,
 OuterPackageID = source.OuterPackageID, QuantityPerOuter = source.QuantityPerOuter, 
 TypicalWeightPerUnit = source.TypicalWeightPerUnit, LeadTimeDays = source.LeadTimeDays, 
-IsChillerStock = source.IsChillerStock, TaxRate = source.TaxRate, UnitPrice = source.UnitPrice, 
-LastEditedBy = source.LastEditedBy
+IsChillerStock = source.IsChillerStock, TaxRate = source.TaxRate, UnitPrice = source.UnitPrice
 when not matched
 then insert (SupplierId, StockItemName, UnitPackageID, OuterPackageID, QuantityPerOuter, TypicalWeightPerUnit,
 LeadTimeDays, IsChillerStock, TaxRate, UnitPrice, LastEditedBy)
 values (source.SupplierId, source.StockItemName, source.UnitPackageID, source.OuterPackageID, 
 source.QuantityPerOuter, source.TypicalWeightPerUnit,source.LeadTimeDays, source.IsChillerStock, 
-source.TaxRate, source.UnitPrice, source.LastEditedBy)
+source.TaxRate, source.UnitPrice)
 output deleted.*, $action, inserted.*;
 
 drop table if exists #StockItemsTemp
@@ -163,17 +150,32 @@ where StockItemName in
 order by StockItemName
 for XML PATH ('StockItems'), ROOT ('StockItems')
 
--- выгрузка не получается надо вставить во временную таблицу тип XML,
--- The FOR XML clause is not allowed in a SELECT INTO statement.
-create table #StockTemp
-(col xml)
 
-
---загрузка в XML файл дальше из временной таблицы. Если весь запрос писать, там сложности
---с экранированием.
-
-DECLARE @cmd VARCHAR(5000);
-SET @cmd = 'bcp.exe "select * from #StockTemp" queryout D:\temp.xml -w -r -T';
+-- выгрузка в XML
+DECLARE @FileName NVARCHAR(200)
+  DECLARE @Cmd   NVARCHAR(4000)
+  
+  SELECT  @FileName = 'd:\temp.xml'
+  
+  SELECT  @Cmd = 'bcp ' +
+		  '"select StockItemName as [Item/@Name] ' +
+			  ', SupplierId as [SupplierId] ' +
+			  ', UnitPackageID as [Package/UnitPackageID] ' +
+			  ', OuterPackageID as [Package/OuterPackageID] ' +
+			  ', QuantityPerOuter as [Package/QuantityPerOuter] ' +
+			  ', TypicalWeightPerUnit as [Package/TypicalWeightPerUnit] ' +
+			  ', LeadTimeDays as [LeadTimeDays] ' +
+			  ', IsChillerStock as [IsChillerStock] ' +
+			  ', TaxRate as [TaxRate] ' +
+			  ', UnitPrice as [UnitPrice] ' +
+		  'from Warehouse.StockItems ' +
+		  'for XML PATH (''StockItems''), ROOT (''StockItems'')" ' + 
+    'queryout ' + @FileName +
+     ' -w -r -T -S localhost -d WideWorldImporters' 
+  
+  SELECT @Cmd 
+  
+  EXECUTE master..xp_cmdshell @Cmd
 
 /*
 3. В таблице Warehouse.StockItems в колонке CustomFields есть данные в JSON.
@@ -236,24 +238,11 @@ select	StockItemID
 from Warehouse.StockItems
 Cross Apply OpenJson(CustomFields, '$.Tags')  as tags
 )
-select String_Agg(cast(a as nvarchar(max)),',') as  tags
+select StockItemID
+		,StockItemName, String_Agg(cast(a as nvarchar(max)),',') as  tags
 from cte
+group by StockItemID, StockItemName
 
---через xml - но тут выводится именно в типе XML, почему, так и не поняла
---P.S. последнюю запятую в строчке можно убрать через left (Field, len (Field) -1), в примерах урока так исправила
-
-;with cte as (
-select	StockItemID
-		,StockItemName
-		,CustomFields
-		,tags.[key]
-		,tags.value as a
-from Warehouse.StockItems
-Cross Apply OpenJson(CustomFields, '$.Tags')  as tags
-)
-select a + ', '  as 'data()'
-from cte
-for xml path ('')
 
 
 
