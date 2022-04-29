@@ -98,7 +98,7 @@ then insert (SupplierId, StockItemName, UnitPackageID, OuterPackageID, QuantityP
 LeadTimeDays, IsChillerStock, TaxRate, UnitPrice, LastEditedBy)
 values (source.SupplierId, source.StockItemName, source.UnitPackageID, source.OuterPackageID, 
 source.QuantityPerOuter, source.TypicalWeightPerUnit,source.LeadTimeDays, source.IsChillerStock, 
-source.TaxRate, source.UnitPrice)
+source.TaxRate, source.UnitPrice, 1)
 output deleted.*, $action, inserted.*;
 
 drop table if exists #StockItemsTemp
