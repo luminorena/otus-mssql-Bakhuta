@@ -202,22 +202,25 @@ VALUES (3, N'Ekaterina', N'Sidorova', 3 )
 INSERT [Employee] ([EmployeeID], [FirstName], [LastName], [DepartmentID]) 
 VALUES (4, N'Alex', N'Nikolaev', 3 ) 
 
+drop function if exists ufn.TestFunction
 
-
-CREATE FUNCTION ufn.TestFunction ()  
-RETURNS TABLE  
+CREATE FUNCTION ufn.TestFunction (@EmployeeId int)  
+RETURNS TABLE
 AS  
-RETURN  
+RETURN
 (
 select EmployeeID, FirstName, LastName,
 E.DepartmentID, [Name] from Employee E
 join Department D on 
 E.DepartmentID = D.DepartmentID
+where EmployeeID = @EmployeeId
 );
+
 
 select * 
 from Department D
-Cross apply ufn.TestFunction () as a
+Cross apply ufn.TestFunction (1) as a
+
 
 /*
 5) Опционально. Во всех процедурах укажите какой уровень изоляции транзакций вы бы использовали и почему. 
