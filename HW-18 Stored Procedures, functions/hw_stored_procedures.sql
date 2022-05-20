@@ -25,79 +25,32 @@ USE WideWorldImporters
 */
 
 --Предварительно нужно создать схему
---CREATE SCHEMA [udf] AUTHORIZATION [dbo]
-
-/*
-Не знаю, верно ли поняла задание. В функцию передается айди клиента, и по нему уже вычисляется, какая
-максимальная сумма его заказа. Если просто делать максимальную стоимость (запрос привела сразу после
-функции) и этот запрос запихнуть в функцию, то будет ошибка, что нельзя никакие order by использовать в 
-функции, а именно в части оконной функции. Ниже написала второй вариант этой функции.
-*/
- 
-GO  
+--CREATE SCHEMA [ufn] AUTHORIZATION [dbo]
  
 DROP FUNCTION if exists udf.getClientWithMaxPurchase
 go
-CREATE FUNCTION udf.getClientWithMaxPurchase (@customerid int)
+CREATE FUNCTION udf.getClientWithMaxPurchase ()
 RETURNS TABLE
 as 
 RETURN
 (
-select top 1
-	sc.CustomerID
-	, max(UnitPrice*Quantity) as Maxprice
-	from sales.Customers sc 
-	join sales.Invoices si on sc.CustomerID = si.CustomerID
-	join sales.InvoiceLines sil on sil.InvoiceID = si.InvoiceID
-	where sc.CustomerID = @customerid
-	group by UnitPrice*Quantity, sc.CustomerID
-	order by Maxprice desc
-);
-
-select * from udf.getClientWithMaxPurchase (14)
-
--- запрос на максимальную стоимость - клиенты, у которых максимальная стоимость
-
-;with cte as
- (
-select distinct 
-	sc.CustomerID
-	, UnitPrice*Quantity as [Sum]
-	, max(UnitPrice*Quantity) as Maxprice
-	, DENSE_RANK() OVER (ORDER BY UnitPrice*Quantity desc) as [Rank]
-	from sales.Customers sc 
-	join sales.Invoices si on sc.CustomerID = si.CustomerID
-	join sales.InvoiceLines sil on sil.InvoiceID = si.InvoiceID
-	group by UnitPrice*Quantity, sc.CustomerID
-)
-select CustomerId, MaxPrice, [Sum]
-from cte 
-where [Rank] = 1
-order by Maxprice desc, CustomerID
-
---Функция для выборки всех maxprice для всех клиентов
-
-drop FUNCTION if exists udf.getMaxPriceForAllClients
-CREATE FUNCTION udf.getMaxPriceForAllClients()
-RETURNS TABLE  
-AS  
-RETURN 
+with preselect as 
 (
-select top 100 percent
-	sc.CustomerID
-	, max(UnitPrice*Quantity) as Maxprice
-	from sales.Customers sc 
-	join sales.Invoices si on sc.CustomerID = si.CustomerID
-	join sales.InvoiceLines sil on sil.InvoiceID = si.InvoiceID
-	group by UnitPrice*Quantity, sc.CustomerID
-	order by Maxprice desc, CustomerID
-);
+select InvoiceID, max(UnitPrice*Quantity) as [MaxSum]
+from sales.InvoiceLines
+where UnitPrice*Quantity = (select max(UnitPrice*Quantity) from sales.InvoiceLines)
+group by UnitPrice*Quantity, InvoiceID
+),
+cte as
+(
+select * from sales.Invoices si
+where si.InvoiceId in (select InvoiceId from preselect) 
+)
+select sc.CustomerId, CustomerName from cte
+join sales.Customers sc on sc.CustomerId = cte.CustomerId
+)
 
---тут если запусить запрос отдельно, то выведет нормально, если в функции, то в разнобой, надо order by
--- дописывать
-
-select * from udf.getMaxPriceForAllClients ()
-order by MaxPrice desc
+select * from udf.getClientWithMaxPurchase()
 
 /*
 2) Написать хранимую процедуру с входящим параметром СustomerID, выводящую сумму покупки по этому клиенту.
@@ -241,33 +194,33 @@ CREATE TABLE [Employee](
 GO
  
 INSERT [Employee] ([EmployeeID], [FirstName], [LastName], [DepartmentID]) 
-VALUES (1, N'Иван', N'Иванов', 1 ) 
+VALUES (1, N'Ivan', N'Ivanov', 1 ) 
 INSERT [Employee] ([EmployeeID], [FirstName], [LastName], [DepartmentID]) 
-VALUES (2, N'Ольга', N'Петрова', 2 ) 
+VALUES (2, N'Olga', N'Petrova', 2 ) 
 INSERT [Employee] ([EmployeeID], [FirstName], [LastName], [DepartmentID]) 
-VALUES (3, N'Екатерина', N'Сидорова', 3 ) 
+VALUES (3, N'Ekaterina', N'Sidorova', 3 ) 
 INSERT [Employee] ([EmployeeID], [FirstName], [LastName], [DepartmentID]) 
-VALUES (4, N'Алексей', N'Николаев', 3 ) 
+VALUES (4, N'Alex', N'Nikolaev', 3 ) 
 
---Не понимаю ,почему получается ошибка. Курсором, как понимаю, нельзя же? 
---Column names in each view or function must be unique. 
---Column name 'DepartmentID' in view or function 'TestFunction' is specified more than once.
+
 
 CREATE FUNCTION ufn.TestFunction ()  
 RETURNS TABLE  
 AS  
 RETURN  
 (
-SELECT * FROM Department D 
-CROSS APPLY 
-   ( 
-   SELECT * FROM Employee E 
-   WHERE E.DepartmentID = D.DepartmentID 
-   ) a
+select EmployeeID, FirstName, LastName,
+E.DepartmentID, [Name] from Employee E
+join Department D on 
+E.DepartmentID = D.DepartmentID
 );
+
+select * 
+from Department D
+Cross apply ufn.TestFunction () as a
 
 /*
 5) Опционально. Во всех процедурах укажите какой уровень изоляции транзакций вы бы использовали и почему. 
 */
 
--- добавлю после исправления п.4
+-- добавлю после всех исправлений
