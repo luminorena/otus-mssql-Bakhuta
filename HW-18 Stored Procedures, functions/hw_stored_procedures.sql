@@ -219,7 +219,7 @@ where EmployeeID = @EmployeeId
 
 select * 
 from Department D
-Cross apply ufn.TestFunction (1) as a
+Cross apply ufn.TestFunction (D.DepartmentID) as a
 
 
 /*
