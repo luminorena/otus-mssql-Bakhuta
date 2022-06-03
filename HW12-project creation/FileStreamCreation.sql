@@ -36,12 +36,12 @@ select * from ref.Documents
 create table ref.DocumentNames
 (DocumentNameId int not null,
 Name nvarchar(max) not null,
-RespinsiblePersonPosition nvarchar(250) not null
+RespinsiblePersonPosition int not null
 )
 ALTER TABLE ref.DocumentNames
    ADD CONSTRAINT PK_DocumentNameId PRIMARY KEY CLUSTERED (DocumentNameId);
 
-insert into ref.DocumentNames (DocumentNameId, [Name], RespinsiblePersonPosition)
+insert into ref.DocumentNames (DocumentNameId, [Name], ResponsiblePersonPosition)
 values (1, N'Лицензия на продажу ветеринарных препаратов',1),
 (2, N'Лицензия на осуществление предпринимательской деятельности', 7)
 
@@ -49,7 +49,8 @@ values (1, N'Лицензия на продажу ветеринарных препаратов',1),
 alter table ref.Documents
 add constraint Document_FK FOREIGN KEY (DocumentId) references ref.DocumentNames (DocumentNameId)
 
-EXEC sp_rename 'ref.DocumentNames.RespinsiblePersonPosition', 'ResponsiblePersonPosition', 'COLUMN';
 
-select * from ref.DocumentNames
+alter table ref.DocumentNames
+add constraint ResponsiblePersonPosition_FK FOREIGN KEY (ResponsiblePersonPosition) 
+references workers.Positions (PositionId)
 
