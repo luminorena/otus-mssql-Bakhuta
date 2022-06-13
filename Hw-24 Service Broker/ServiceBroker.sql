@@ -1,17 +1,3 @@
-use WideWorldImporters
-
-select * from sales.Orders
-
-select * from Sales.Invoices
-
-/*
-1. Создайте очередь для формирования отчетов для клиентов по таблице Invoices. 
-При вызове процедуры для создания отчета в очередь должна отправляться заявка.
-2. При обработке очереди создавайте отчет по количеству заказов (Orders)
-по клиенту за заданный период времени и складывайте готовый отчет в новую таблицу.
-3. Проверьте, что вы корректно открываете и закрываете диалоги и у нас они не копятся.
-*/
-
 use master
 ALTER DATABASE VetShop SET SINGLE_USER WITH ROLLBACK IMMEDIATE
 ALTER DATABASE VetShop SET ENABLE_BROKER
