@@ -1,0 +1,6 @@
+C:\Users\olech\source\repos\IpAddresses\bin\Debug\IpAddresses.dll
+C:\Users\olech\source\repos\IpAddresses\bin\Debug\IpAddresses.pdb
+C:\Users\olech\source\repos\IpAddresses\obj\Debug\IpAddresses.csproj.AssemblyReference.cache
+C:\Users\olech\source\repos\IpAddresses\obj\Debug\IpAddresses.csproj.CoreCompileInputs.cache
+C:\Users\olech\source\repos\IpAddresses\obj\Debug\IpAddresses.dll
+C:\Users\olech\source\repos\IpAddresses\obj\Debug\IpAddresses.pdb
