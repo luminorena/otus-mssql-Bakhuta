@@ -3,6 +3,10 @@ ALTER DATABASE VetShop SET SINGLE_USER WITH ROLLBACK IMMEDIATE
 ALTER DATABASE VetShop SET ENABLE_BROKER
 ALTER DATABASE VetShop SET MULTI_USER
 
+USE [VetShop]
+GO
+EXEC dbo.sp_changedbowner @loginame = N'sa'
+GO
 --создать сообщение
 
 
@@ -52,7 +56,7 @@ DROP PROC IF EXISTS Sales.SendOrders;
 GO
 
 CREATE PROCEDURE Sales.SendOrders
-	@OrderId INT
+	@OrderID INT
 AS
 
 BEGIN
@@ -67,7 +71,7 @@ BEGIN
 --подготовка сообщения
 	SELECT @RequestMessage = (Select OrderId 
 							  from sales.Orders as Orders
-							  where OrderId=@OrderId
+							  where OrderID=@OrderID
 							  FOR XML AUTO, root('RequestMessage'));
 --определяем сервис инициатора, таргет и контракт
 	BEGIN DIALOG @InitDlgHandle
@@ -185,12 +189,12 @@ ALTER QUEUE [dbo].[TargetOrdersQueue] WITH STATUS = ON , RETENTION = OFF , POISO
 
 GO
 -- проверка
---отправляем OrderId = 1
+--отправляем OrderId = 3
 select * from sales.Orders
-where OrderId = 1
+where OrderID = 3
 
 EXEC Sales.SendOrders
-	@OrderId = 1
+	@OrderID = 3;
 
 --смотрим очереди, сообщение будет в таргете
 SELECT CAST(message_body AS XML),*
@@ -218,3 +222,5 @@ EXEC Sales.GetInvoicesWithParams
 --Initiator
 EXEC Sales.ConfirmOrder
 
+select *
+from sys.transmission_queue;
