@@ -56,7 +56,7 @@ DROP PROC IF EXISTS Sales.SendOrders;
 GO
 
 CREATE PROCEDURE Sales.SendOrders
-	@OrderID INT
+	@OrderId INT
 AS
 
 BEGIN
@@ -71,7 +71,7 @@ BEGIN
 --подготовка сообщения
 	SELECT @RequestMessage = (Select OrderId 
 							  from sales.Orders as Orders
-							  where OrderID=@OrderID
+							  where OrderId=@OrderId
 							  FOR XML AUTO, root('RequestMessage'));
 --определяем сервис инициатора, таргет и контракт
 	BEGIN DIALOG @InitDlgHandle
@@ -105,7 +105,7 @@ BEGIN
 			@MessageType Sysname, 
 			@ReplyMessage NVARCHAR(4000),
 			@ReplyMessageName Sysname, 
-			@OrderID INT,
+			@OrderId INT,
 			@xml XML; 
 	
 	BEGIN TRAN; 
@@ -122,14 +122,14 @@ BEGIN
 	SET @xml = CAST(@Message AS XML);
 
 
-	SELECT @OrderID = R.Ord.value('@OrderID','INT')
+	SELECT @OrderId = R.Ord.value('@OrderId','INT')
    FROM @xml.nodes('/RequestMessage/Orders') as R(Ord);
 	 
-	 IF EXISTS (SELECT * FROM sales.Orders WHERE OrderID = @OrderID)
+	 IF EXISTS (SELECT * FROM sales.Orders WHERE OrderId = @OrderId)
 	BEGIN
 		UPDATE Sales.Orders
 		SET OrdersConfirmedForProcessing = getdate()
-		WHERE OrderID = @OrderID;
+		WHERE OrderId = @OrderId;
 	END;
 
 
@@ -191,10 +191,10 @@ GO
 -- проверка
 --отправляем OrderId = 3
 select * from sales.Orders
-where OrderID = 3
+where OrderId = 3
 
 EXEC Sales.SendOrders
-	@OrderID = 3;
+	@OrderId = 3;
 
 --смотрим очереди, сообщение будет в таргете
 SELECT CAST(message_body AS XML),*
