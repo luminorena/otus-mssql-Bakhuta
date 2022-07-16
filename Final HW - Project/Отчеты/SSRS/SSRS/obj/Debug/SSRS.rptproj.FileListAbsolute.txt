@@ -1,0 +1,2 @@
+D:\otus-mssql-Bakhuta\HW-21 PowerBI, SSRS\SSRS\SSRS\obj\Debug\SSRS.rptproj.AssemblyReference.cache
+D:\otus-mssql-Bakhuta\HW-21 PowerBI, SSRS\SSRS\SSRS\obj\Debug\SSRS.rptproj.CoreCompileInputs.cache
