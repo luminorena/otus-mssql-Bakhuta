@@ -1,0 +1,174 @@
+﻿<DataSourceView xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ddl2="http://schemas.microsoft.com/analysisservices/2003/engine/2" xmlns:ddl2_2="http://schemas.microsoft.com/analysisservices/2003/engine/2/2" xmlns:ddl100_100="http://schemas.microsoft.com/analysisservices/2008/engine/100/100" xmlns:ddl200="http://schemas.microsoft.com/analysisservices/2010/engine/200" xmlns:ddl200_200="http://schemas.microsoft.com/analysisservices/2010/engine/200/200" xmlns:ddl300="http://schemas.microsoft.com/analysisservices/2011/engine/300" xmlns:ddl300_300="http://schemas.microsoft.com/analysisservices/2011/engine/300/300" xmlns:ddl400="http://schemas.microsoft.com/analysisservices/2012/engine/400" xmlns:ddl400_400="http://schemas.microsoft.com/analysisservices/2012/engine/400/400" xmlns:ddl500="http://schemas.microsoft.com/analysisservices/2013/engine/500" xmlns:ddl500_500="http://schemas.microsoft.com/analysisservices/2013/engine/500/500" xmlns:dwd="http://schemas.microsoft.com/DataWarehouse/Designer/1.0" dwd:design-time-name="5b2a0916-8e18-4c3e-8453-eae5269ce182" xmlns="http://schemas.microsoft.com/analysisservices/2003/engine">
+  <ID>Vet Shop DWH</ID>
+  <Name>Vet Shop DWH</Name>
+  <CreatedTimestamp>0001-01-01T00:00:00Z</CreatedTimestamp>
+  <LastSchemaUpdate>0001-01-01T00:00:00Z</LastSchemaUpdate>
+  <Annotations>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:ShowFriendlyNames</Name>
+      <Value>true</Value>
+    </Annotation>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:CurrentLayout</Name>
+      <Value>_ALL_TABLES_</Value>
+    </Annotation>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:SchemaRestriction</Name>
+      <Value></Value>
+    </Annotation>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:RetrieveRelationships</Name>
+      <Value>true</Value>
+    </Annotation>
+    <Annotation>
+      <Name>http://schemas.microsoft.com/DataWarehouse/Designer/1.0:Layouts</Name>
+      <Value>
+        <Layouts xmlns="">
+          <Diagram>
+            <Name>_ALL_TABLES_</Name>
+            <DiagramLayout />
+            <ShowRelationshipNames>False</ShowRelationshipNames>
+            <UseDiagramDefaultLayout>True</UseDiagramDefaultLayout>
+            <DiagramViewPortLeft>0</DiagramViewPortLeft>
+            <DiagramViewPortTop>0</DiagramViewPortTop>
+            <DiagramBoundingLeft>0</DiagramBoundingLeft>
+            <DiagramBoundingTop>0</DiagramBoundingTop>
+            <DiagramZoom>100</DiagramZoom>
+          </Diagram>
+        </Layouts>
+      </Value>
+    </Annotation>
+  </Annotations>
+  <DataSourceID>Vet Shop DWH</DataSourceID>
+  <Schema>
+    <xs:schema id="Vet_x0020_Shop_x0020_DWH" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
+      <xs:element name="Vet_x0020_Shop_x0020_DWH" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:design-time-name="63be0aa8-a009-43d5-9865-b1f8628b8f6f">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="dimensions_Customers" msprop:design-time-name="502ba4a6-595f-4a8a-81af-220c69baea6f" msprop:DbTableName="Customers" msprop:FriendlyName="Customers" msprop:DbSchemaName="dimensions" msprop:TableType="Table">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="CustomerId" msprop:design-time-name="5d3c35f6-dadf-4478-9800-93e23eac261e" msprop:DbColumnName="CustomerId" msprop:FriendlyName="CustomerId" type="xs:long" />
+                  <xs:element name="CustomerName" msprop:design-time-name="7ad94c06-2c00-4ea2-a584-c1d49b63f53c" msprop:DbColumnName="CustomerName" msprop:FriendlyName="CustomerName">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="100" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="DeliveryAddress" msprop:design-time-name="08985ee9-b44d-4923-9c5e-8d41b60deb60" msprop:DbColumnName="DeliveryAddress" msprop:FriendlyName="DeliveryAddress">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="100" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="IsConstant" msprop:design-time-name="2faf16b6-d391-41ab-ab56-c1b6c155c5d7" msprop:DbColumnName="IsConstant" msprop:FriendlyName="IsConstant" type="xs:boolean" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="dimensions_Products" msprop:design-time-name="695134f4-1646-4295-8b56-ad002fee9d0f" msprop:DbTableName="Products" msprop:FriendlyName="Products" msprop:DbSchemaName="dimensions" msprop:TableType="Table">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="ProductId" msprop:design-time-name="3e6277df-53c3-49ba-9216-fc9ad3320ddd" msprop:DbColumnName="ProductId" msprop:FriendlyName="ProductId" type="xs:long" />
+                  <xs:element name="OrderId" msprop:design-time-name="5162b8a3-347d-4718-ba13-d5b026eed323" msprop:DbColumnName="OrderId" msprop:FriendlyName="OrderId" type="xs:long" />
+                  <xs:element name="ProductDescription" msprop:design-time-name="762a0469-3377-44ed-9fc9-279ab06a209e" msprop:DbColumnName="ProductDescription" msprop:FriendlyName="ProductDescription">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="100" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="dimensions_Suppliers" msprop:design-time-name="9b08fc84-10a7-42a2-8fbc-a177b6e8d0f8" msprop:DbTableName="Suppliers" msprop:FriendlyName="Suppliers" msprop:DbSchemaName="dimensions" msprop:TableType="Table">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="SupplierId" msprop:design-time-name="0079a207-5a74-4700-8fc1-4bd821cebec3" msprop:DbColumnName="SupplierId" msprop:FriendlyName="SupplierId" type="xs:long" />
+                  <xs:element name="CustomerId" msprop:design-time-name="a27d3d70-fa4d-48f2-8b61-5b26732e0139" msprop:DbColumnName="CustomerId" msprop:FriendlyName="CustomerId" type="xs:long" />
+                  <xs:element name="SupplierName" msprop:design-time-name="01dec57c-a43b-489c-ba61-5233fe79f6d6" msprop:DbColumnName="SupplierName" msprop:FriendlyName="SupplierName">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="100" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="PhoneNumber" msprop:design-time-name="b1afbfb3-a67a-437c-a352-3252d72e4b47" msprop:DbColumnName="PhoneNumber" msprop:FriendlyName="PhoneNumber">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="50" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="SupplierAddress" msprop:design-time-name="efe336d4-112c-4fef-a8f4-9e84434799e8" msprop:DbColumnName="SupplierAddress" msprop:FriendlyName="SupplierAddress">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="100" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="Email" msprop:design-time-name="5002fd90-54cf-4249-92f7-a2bc101d8f44" msprop:DbColumnName="Email" msprop:FriendlyName="Email">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="100" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="PositionId" msprop:design-time-name="19b0f3d0-6216-47e4-9672-0e1cfda79d02" msprop:DbColumnName="PositionId" msprop:FriendlyName="PositionId" type="xs:long" minOccurs="0" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="facts_Orders" msprop:design-time-name="92441f28-55aa-453c-9d06-d6a057c493c0" msprop:DbTableName="Orders" msprop:FriendlyName="Orders" msprop:DbSchemaName="facts" msprop:TableType="Table">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="OrderId" msprop:design-time-name="6b1c58ef-73b6-4d55-a4c4-f42c3543fee6" msprop:DbColumnName="OrderId" msprop:FriendlyName="OrderId" type="xs:long" />
+                  <xs:element name="CustomerId" msprop:design-time-name="d7fcb736-a655-4d5e-9855-1e23bf7bb1bc" msprop:DbColumnName="CustomerId" msprop:FriendlyName="CustomerId" type="xs:long" />
+                  <xs:element name="ProductId" msprop:design-time-name="37930701-bce4-4803-9af7-503532a8c018" msprop:DbColumnName="ProductId" msprop:FriendlyName="ProductId" type="xs:long" />
+                  <xs:element name="SupplierId" msprop:design-time-name="b11e60d5-72de-4462-a548-7fa6e098d7c4" msprop:DbColumnName="SupplierId" msprop:FriendlyName="SupplierId" type="xs:long" />
+                  <xs:element name="Quantity" msprop:design-time-name="a1a32e1e-fb86-4a9f-9f17-f7933b98b1a0" msprop:DbColumnName="Quantity" msprop:FriendlyName="Quantity" type="xs:int" />
+                  <xs:element name="CostPerUnit" msprop:design-time-name="0028182d-489e-4417-b755-7cd1d6863a7c" msprop:DbColumnName="CostPerUnit" msprop:FriendlyName="CostPerUnit" type="xs:decimal" />
+                  <xs:element name="SaleDate" msprop:design-time-name="0c986b41-11f9-4585-8ed2-be61a3e70829" msprop:DbColumnName="SaleDate" msprop:FriendlyName="SaleDate" type="xs:dateTime" />
+                  <xs:element name="OrdersConfirmedForProcessing" msprop:design-time-name="3d04e651-2c4a-4024-9194-0c960afdabef" msprop:DbColumnName="OrdersConfirmedForProcessing" msprop:FriendlyName="OrdersConfirmedForProcessing" type="xs:dateTime" minOccurs="0" />
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+        <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+          <xs:selector xpath=".//dimensions_Customers" />
+          <xs:field xpath="CustomerId" />
+        </xs:unique>
+        <xs:unique name="dimensions_Products_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+          <xs:selector xpath=".//dimensions_Products" />
+          <xs:field xpath="ProductId" />
+        </xs:unique>
+        <xs:unique name="dimensions_Suppliers_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+          <xs:selector xpath=".//dimensions_Suppliers" />
+          <xs:field xpath="SupplierId" />
+        </xs:unique>
+        <xs:unique name="facts_Orders_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+          <xs:selector xpath=".//facts_Orders" />
+          <xs:field xpath="OrderId" />
+        </xs:unique>
+        <xs:keyref name="FK_ProductId" refer="dimensions_Products_Constraint1">
+          <xs:selector xpath=".//facts_Orders" />
+          <xs:field xpath="ProductId" />
+        </xs:keyref>
+        <xs:keyref name="FK__Orders__CustomerId" refer="Constraint1">
+          <xs:selector xpath=".//facts_Orders" />
+          <xs:field xpath="CustomerId" />
+        </xs:keyref>
+        <xs:keyref name="FK_SupplierId" refer="dimensions_Suppliers_Constraint1">
+          <xs:selector xpath=".//facts_Orders" />
+          <xs:field xpath="SupplierId" />
+        </xs:keyref>
+        <xs:keyref name="FK__Products__OrderId" refer="facts_Orders_Constraint1">
+          <xs:selector xpath=".//dimensions_Products" />
+          <xs:field xpath="OrderId" />
+        </xs:keyref>
+      </xs:element>
+    </xs:schema>
+    <Vet_x0020_Shop_x0020_DWH xmlns="" />
+  </Schema>
+</DataSourceView>

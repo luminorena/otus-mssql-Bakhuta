@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D2ABAB84-BF74-430A-B69E-9DC6D40DDA17}") = "OLAP_VetShop", "OLAP_VetShop.dwproj", "{9BC8FAF2-3290-4D4F-90B0-68EF730FF08F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9BC8FAF2-3290-4D4F-90B0-68EF730FF08F}.Development|Default.ActiveCfg = Development
+		{9BC8FAF2-3290-4D4F-90B0-68EF730FF08F}.Development|Default.Build.0 = Development
+		{9BC8FAF2-3290-4D4F-90B0-68EF730FF08F}.Development|Default.Deploy.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE1CA5A9-410E-4133-886B-32F14BACB3AF}
+	EndGlobalSection
+EndGlobal
